@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -7,11 +7,29 @@ const MainTodo = () => {
   const [todo, setTodo] = useState("");
   const [todos, setTodos] = useState([]);
 
+  
+  useEffect(() => {
+    let todoString = localStorage.getItem("todos");
+    if(todoString){
 
+      let todos = JSON.parse(localStorage.getItem("todos"))
+      setTodos(todos)
+    }
+  }, [])
+  
+
+
+
+
+
+const saveToLS = (params) => {
+  localStorage.setItem("todos", JSON.stringify(todos))
+}
 
   const handleAdd = () => {
     setTodos([...todos, { id: uuidv4(), todo, isCompleted: false }]);
     setTodo("");
+    saveToLS()
   }
   const handleEdit = (e, id) => {
    let t = todos.filter(i => i.id === id)
@@ -20,6 +38,7 @@ const MainTodo = () => {
     return item.id !== id;
   });
   setTodos(newTodos);
+  saveToLS()
   }
 
   const handleDelete = (e , id) => {
@@ -28,7 +47,7 @@ let newTodos = todos.filter(item => {
       return item.id !== id;
     });
     setTodos(newTodos);
- 
+    saveToLS()
     
   }
   const handleChange = (e) => {
@@ -43,6 +62,7 @@ let newTodos = todos.filter(item => {
     let newTodos = [...todos];
     newTodos[index].isCompleted = !newTodos[index].isCompleted;
     setTodos(newTodos);
+    saveToLS()
   }
 
   return (
@@ -67,7 +87,7 @@ let newTodos = todos.filter(item => {
                 </div>
                 </div>
               
-                <div>
+                <div className="flex h-full">
                   <button onClick={(e) =>handleEdit(e, item.id)} className="bg-violet-500 hover:bg-violet-800 p-2 py-1 text-white rounded-md mx-1">Edit</button>
                   <button onClick={(e) => handleDelete(e, item.id)} className="bg-violet-500 hover:bg-violet-800 p-2 py-1 text-white rounded-md mx-1">Delete</button>
                 </div>
